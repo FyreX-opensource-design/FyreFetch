@@ -121,7 +121,6 @@ The script includes built-in icons for:
 If the ASCII art isn't showing up, try:
 1. Install `ascii-image-converter` if not already installed
 2. Check that the image file exists and is readable
-3. The script will fall back to a text logo if ASCII conversion fails
 
 ### RAM Type/Speed Not Showing
 
