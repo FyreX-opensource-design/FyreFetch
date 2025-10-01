@@ -97,7 +97,7 @@ sudo ./main.sh
 
 Place your custom distribution icon at:
 ```
-/etc/xdg/fyrefetch/os-icon.png
+/etc/xdg/fetch/os-icon.png
 ```
 
 The script will automatically use this icon if available, otherwise it will fall back to the built-in icons in the `assets/icons/` directory.
