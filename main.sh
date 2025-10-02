@@ -167,6 +167,10 @@ print_system_info() {
     echo "Greeter: $GREETER_INFO"
     echo "Compositor: $COMPOSITOR_INFO"
     echo "Package Managers: $PACKAGE_MANAGER"
+    echo "Universal Package Managers: $UNIVERSAL_PACKAGE_MANAGER"
+    echo "Widget Frameworks: $WIDGET_FRAMEWORK"
+    echo "Taskbar Frameworks: $TASKBAR_FRAMEWORK"
+    echo "Shell: $SHELL_INFO"
 }
 
 get_total_storage() {
@@ -262,6 +266,95 @@ get_package_managers() {
     fi
 }
 
+universal_package_managers() {
+    local managers=("snap" "flatpak" "am")
+    local found=()
+    for mgr in "${managers[@]}"; do
+        if command -v "$mgr" >/dev/null 2>&1; then
+            found+=("$mgr")
+        fi
+    done
+
+    local count=${#found[@]}
+    if (( count == 0 )); then
+        export UNIVERSAL_PACKAGE_MANAGER="None"
+    elif (( count == 1 )); then
+        export UNIVERSAL_PACKAGE_MANAGER="${found[0]}"
+    elif (( count == 2 )); then
+        export UNIVERSAL_PACKAGE_MANAGER="${found[0]}, ${found[1]}"
+    elif (( count == 3 )); then
+        export UNIVERSAL_PACKAGE_MANAGER="${found[0]}, ${found[1]}, ${found[2]}"
+    else
+        export UNIVERSAL_PACKAGE_MANAGER="${found[0]}, ${found[1]}, ${found[2]}, and $((count-3)) other"
+    fi
+}
+
+get_shell_info() {
+    export SHELL_INFO=$(echo $SHELL | awk -F/ '{print $NF}')
+}
+
+get_widget_info() {
+    local widget_frameworks=("eww", "weld", "ags", "fabric")
+    local found=()
+    for mgr in "${widget_frameworks[@]}"; do
+        if pgrep -x "$mgr" >/dev/null 2>&1; then
+            found+=("$mgr")
+        fi
+    done
+
+    local count=${#found[@]}
+    if (( count == 0 )); then
+        export WIDGET_FRAMEWORK="None"
+    elif (( count == 1 )); then
+        export WIDGET_FRAMEWORK="${found[0]}"
+    elif (( count == 2 )); then
+        export WIDGET_FRAMEWORK="${found[0]}, ${found[1]}"
+    elif (( count == 3 )); then
+        export WIDGET_FRAMEWORK="${found[0]}, ${found[1]}, ${found[2]}"
+    else
+        export WIDGET_FRAMEWORK="${found[0]}, ${found[1]}, ${found[2]}, and $((count-3)) other"
+    fi
+}
+
+get_taskbar_info() {
+    local taskbar_frameworks=("waybar", "sfwbar", "ironbar", "polybar")
+    local found=()
+    for mgr in "${taskbar_frameworks[@]}"; do
+        if pgrep -x "$mgr" >/dev/null 2>&1; then
+            found+=("$mgr")
+        fi
+    done
+
+    local count=${#found[@]}
+    if (( count == 0 )); then
+        export TASKBAR_FRAMEWORK="None"
+    elif (( count == 1 )); then
+        export TASKBAR_FRAMEWORK="${found[0]}"
+    elif (( count == 2 )); then
+        export TASKBAR_FRAMEWORK="${found[0]}, ${found[1]}"
+    elif (( count == 3 )); then
+        export TASKBAR_FRAMEWORK="${found[0]}, ${found[1]}, ${found[2]}"
+    else
+        export TASKBAR_FRAMEWORK="${found[0]}, ${found[1]}, ${found[2]}, and $((count-3)) other"
+    fi
+}
+get_hostname_info() {
+    export HOSTNAME_INFO=$(hostnamectl | grep "Static hostname:" | awk '{print $3}')
+    export VENDOR_INFO=$(hostnamectl | grep "Hardware Vendor:" | awk -F': ' '{print $2}' | xargs)
+    export HARDWARE_MODEL_INFO=$(hostnamectl | grep "Hardware Model:" | awk -F': ' '{print $2}' | xargs)
+}
+
+build_name() {
+    # Get the original user who ran the script (even if run with sudo)
+    local original_user
+    if [ -n "$SUDO_USER" ]; then
+        original_user="$SUDO_USER"
+    else
+        original_user="$(whoami)"
+    fi
+    export NAME_INFO="${original_user}@${HOSTNAME_INFO}"
+}
+
 main() {
     get_host_distro
     get_kernel_version
@@ -270,6 +363,14 @@ main() {
     get_greeter_info
     get_compositor_info
     get_package_managers
+    universal_package_managers
+    get_shell_info
+    get_widget_info
+    get_taskbar_info
+    get_hostname_info
+    build_name
+    #     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    echo "($NAME_INFO) on $VENDOR_INFO's $HARDWARE_MODEL_INFO"
     paste <(ascii-image-converter $HOST_ICON -C) <(echo -e "$(print_system_info)")
 }
 
