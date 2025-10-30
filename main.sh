@@ -267,7 +267,7 @@ get_package_managers() {
 }
 
 universal_package_managers() {
-    local managers=("snap" "flatpak" "am")
+    local managers=("snap" "flatpak" "am", "cargo", "conda", "pipx", "nimble", "pkgit")
     local found=()
     for mgr in "${managers[@]}"; do
         if command -v "$mgr" >/dev/null 2>&1; then
