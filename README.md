@@ -102,17 +102,17 @@ Place your custom distribution icon at:
 
 The script will automatically use this icon if available, otherwise it will fall back to the built-in icons in the `assets/icons/` directory.
 
-### Supported Distributions
+### Supported Distributions *TODO
 
 The script includes built-in icons for:
 - Arch Linux
-- Ubuntu
-- Fedora
-- Debian
-- Linux Mint
-- openSUSE
-- CentOS
-- Unknown (fallback)
+- Ubuntu*
+- Fedora*
+- Debian*
+- Linux Mint*
+- openSUSE*
+- CentOS*
+- Unknown (fallback)*
 
 ## Troubleshooting
 
